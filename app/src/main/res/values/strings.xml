@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">HillPlayer</string>
+
+    <string name="test_text">测试文字</string>
+    <string name="open_drawer">open_drawer</string>
+    <string name="close_drawer">close_drawer</string>
+    <string name="music_player">音乐播放器</string>
+    <string name="radio">收音机</string>
+    <string name="video_player">视频播放器</string>
+
+    <string name="common_loading_message">Loading...</string>
+    <string name="common_empty_msg">Oops, failed to resolve data\nPlease hit the screen and try again~</string>
+    <string name="common_error_msg">Oops, something wrong!\nPlease hit the screen and try again~</string>
+    <string name="common_no_network_msg">No network connected!\nPlease hit the screen and try again after connecting~</string>
+</resources>
