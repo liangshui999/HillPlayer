@@ -6,17 +6,22 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.presenter.BasePresenter;
 import com.example.asus.hillplayer.receiver.INetObserver;
 import com.example.asus.hillplayer.receiver.NetStateReceiver;
 import com.example.asus.hillplayer.util.IVaryViewController;
 import com.example.asus.hillplayer.util.VaryViewController;
 import com.example.asus.hillplayer.util.VaryViewHelper;
-import com.example.asus.hillplayer.viewinterface.BaseViewInterface;
+import com.example.asus.hillplayer.view.BaseViewInterface;
 
 /**
  * Created by asus-cp on 2016-12-20.
@@ -39,11 +44,18 @@ implements BaseViewInterface{
 
     protected NetStateReceiver mNetStateReceiver;
 
+    protected INetObserver mNetObserver;
+
     protected T mPresenter;
+
+    private Toolbar mToolBar;
+
+    private LinearLayout mContentLinearLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_base);
         mPresenter = createPresenter();
         mPresenter.attachView((V) this);
         init();
@@ -51,6 +63,9 @@ implements BaseViewInterface{
     }
 
     private void init() {
+        mContentLinearLayout = (LinearLayout) findViewById(R.id.ll_content);
+        mToolBar= (Toolbar) findViewById(R.id.title);
+
         TAG = this.getClass().getSimpleName();
         mContext = this;
         DisplayMetrics metrics = new DisplayMetrics();
@@ -59,21 +74,20 @@ implements BaseViewInterface{
         mScreenHeight = metrics.heightPixels;
         mDpi = metrics.densityDpi;
 
-        mVaryViewController = new VaryViewController(new VaryViewHelper(getTargetView()));
+
+        mVaryViewController = new VaryViewController(new VaryViewHelper(mContentLinearLayout));
         mNetStateReceiver = new NetStateReceiver();
-        mNetStateReceiver.registerObserver(new INetObserver() {
-            @Override
-            public void onNetConnected() {
-
-            }
-
-            @Override
-            public void onNetDisConnected() {
-
-            }
-        });
         IntentFilter intentFilter=new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
         registerReceiver(mNetStateReceiver,intentFilter);
+
+
+        mToolBar.setTitle("base的toolbar");
+        setSupportActionBar(mToolBar);
+        getSupportActionBar().setHomeButtonEnabled(true);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mToolBar.setTitleTextColor(getResources().getColor(R.color.white));
+
+
     }
 
 
@@ -85,9 +99,64 @@ implements BaseViewInterface{
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * 设置内容的布局
+     * @param contentId
+     */
+    public void setContentLayout(int contentId){
+        View v = LayoutInflater.from(this).inflate(contentId, null);
+        setContentLayout(v);
+    }
+
+    /**
+     * 设置内容的布局
+     */
+    public void setContentLayout(View v){
+        mContentLinearLayout.addView(v);
+    }
+
+    /**
+     * 隐藏头部
+     */
+    public void hideTitle(){
+        mToolBar.setVisibility(View.GONE);
+    }
+
+    /**
+     * 设置头部
+     * @param title
+     */
+    public void setTitle(String title){
+        mToolBar.setTitle(title);
+    }
+
+    /**
+     * 设置头部
+     * @param resId
+     */
+    public void setTitle(int resId){
+        mToolBar.setTitle(resId);
+    }
+
+    @Override
     public void showLoading(String loadString) {
         mVaryViewController.showLoadingView(loadString);
     }
+
+    @Override
+    public void showLoading(int resId) {
+        showLoading(getString(resId));
+    }
+
 
     @Override
     public void hideLoading() {
@@ -99,6 +168,10 @@ implements BaseViewInterface{
         mVaryViewController.showErrorView(error,onClickListener);
     }
 
+    @Override
+    public void showError(int resId, View.OnClickListener onClickListener) {
+        showError(getString(resId), onClickListener);
+    }
 
     public void showToast(String msg){
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
@@ -122,7 +195,25 @@ implements BaseViewInterface{
         startActivityForResult(intent,RequestCode);
     }
 
+    public void setmNetObserver(INetObserver mNetObserver) {
+        this.mNetObserver = mNetObserver;
+        if(mNetObserver != null){
+            mNetStateReceiver.registerObserver(mNetObserver);
+        }
+    }
 
+
+    @Deprecated
+    private View getTargetView(){
+        return mContentLinearLayout;
+    };
+
+    /**
+     * 手动设置viewcontroller
+     */
+    protected void refreshVaryViewController(View v){
+        mVaryViewController = new VaryViewController(new VaryViewHelper(v));
+    }
 
     public abstract void initView();
 
@@ -134,11 +225,6 @@ implements BaseViewInterface{
      */
     public abstract T createPresenter() ;
 
-    /**
-     * 获取需要加载的view,这个view在加载出来之前显示loading view
-     * 加载出错的时候显示error view
-     * @return
-     */
-    public abstract View getTargetView();
+
 
 }

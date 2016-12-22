@@ -10,15 +10,17 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.presenter.BasePresenter;
 import com.example.asus.hillplayer.receiver.INetObserver;
 import com.example.asus.hillplayer.receiver.NetStateReceiver;
 import com.example.asus.hillplayer.util.IVaryViewController;
 import com.example.asus.hillplayer.util.VaryViewController;
 import com.example.asus.hillplayer.util.VaryViewHelper;
-import com.example.asus.hillplayer.viewinterface.BaseViewInterface;
+import com.example.asus.hillplayer.view.BaseViewInterface;
 
 /**
  * Created by asus-cp on 2016-12-19.
@@ -41,23 +43,19 @@ implements BaseViewInterface{
 
     protected NetStateReceiver mNetStateReceiver;
 
+    protected INetObserver mNetObserver;
+
     protected T mPresenter;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mPresenter=createPresenter();
         mPresenter.attachView((V) this);
-    }
-
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
         init();
-        return super.onCreateView(inflater, container, savedInstanceState);
     }
+
 
 
     @Override
@@ -68,32 +66,28 @@ implements BaseViewInterface{
     }
 
     private void init(){
+        TAG = this.getClass().getSimpleName();
         mContext = getActivity();
         DisplayMetrics metrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(metrics);
         mScreenWidth=metrics.widthPixels;
         mScrrenHeight=metrics.heightPixels;
         mDpi=metrics.densityDpi;
-        mVaryViewController=new VaryViewController(new VaryViewHelper(getTargetView()));
+
         mNetStateReceiver=new NetStateReceiver();
-        mNetStateReceiver.registerObserver(new INetObserver() {
-            @Override
-            public void onNetConnected() {
-
-            }
-
-            @Override
-            public void onNetDisConnected() {
-
-            }
-        });
         IntentFilter intentFilter=new IntentFilter("android.net.conn.CONNECTIVITY_CHANGE");
         getActivity().registerReceiver(mNetStateReceiver,intentFilter);
     };
 
+
     @Override
     public void showLoading(String loadString) {
         mVaryViewController.showLoadingView(loadString);
+    }
+
+    @Override
+    public void showLoading(int resId) {
+        showLoading(getString(resId));
     }
 
     @Override
@@ -106,6 +100,10 @@ implements BaseViewInterface{
         mVaryViewController.showErrorView(error,onClickListener);
     }
 
+    @Override
+    public void showError(int resId, View.OnClickListener onClickListener) {
+        showError(getString(resId), onClickListener);
+    }
 
     public void showToast(String msg){
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
@@ -129,6 +127,16 @@ implements BaseViewInterface{
         startActivityForResult(intent,RequestCode);
     }
 
+    public void setNetObserver(INetObserver mNetObserver) {
+        this.mNetObserver = mNetObserver;
+        if(mNetObserver != null){
+            mNetStateReceiver.registerObserver(mNetObserver);
+        }
+    }
+
+    public void refreshVaryViewController(View v){
+        mVaryViewController = new VaryViewController(new VaryViewHelper(v));
+    }
 
     /**
      * 创建presenter
@@ -136,14 +144,13 @@ implements BaseViewInterface{
      */
     protected abstract T createPresenter();
 
-    /**
-     * 获取需要加载的view,这个view在加载出来之前显示loading view
-     * 加载出错的时候显示error view
-     * @return
-     */
-    public abstract View getTargetView();
 
-    public abstract void initView();
+    @Deprecated
+    private  View getTargetView(){
+        return null;
+    };
 
-    public abstract void initData();
+    public void initView(){};
+
+    public void initData(){};
 }
