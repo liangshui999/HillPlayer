@@ -1,6 +1,7 @@
 package com.example.asus.hillplayer.model.IModel;
 
 import com.example.asus.hillplayer.beans.Music;
+import com.example.asus.hillplayer.callback.Callback;
 
 import java.util.List;
 
@@ -10,5 +11,5 @@ import java.util.List;
 
 public interface IModelLocalMusicList {
 
-    List<Music> fetchMusicList();
+    void fetchMusicList(Callback<List<Music>> musics);
 }

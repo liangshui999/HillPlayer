@@ -11,11 +11,6 @@ import java.util.List;
 
 public interface IViewLoaclMusicList extends BaseViewInterface {
 
-    /**
-     * 第一次获取数据之后刷新UI
-     * @param musics
-     */
-    void initUI(List<Music> musics);
 
     /**
      * 每次数据更新的时候刷新UI

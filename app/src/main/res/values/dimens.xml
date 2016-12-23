@@ -23,11 +23,18 @@
     <dimen name="button_height_normal">40dp</dimen>
     <dimen name="button_height_short">32dp</dimen>
 
-    <dimen name="padding_normal">10dp</dimen>
-    <dimen name="padding_small">5dp</dimen>
+    <dimen name="padding_10">10dp</dimen>
+    <dimen name="padding_5">5dp</dimen>
+    <dimen name="padding_2">2dp</dimen>
+    <dimen name="padding_1">1dp</dimen>
 
-    <dimen name="marggin_normal">10dp</dimen>
-    <dimen name="marggin_small">5dp</dimen>
+    <dimen name="marggin_10">10dp</dimen>
+    <dimen name="marggin_5">5dp</dimen>
+    <dimen name="marggin_2">2dp</dimen>
+    <dimen name="marggin_1">1dp</dimen>
+
+    <dimen name="img_20">20dp</dimen>
+    <dimen name="img_30">30dp</dimen>
 
     <dimen name="common_load_more_progress_size">30dp</dimen>
     <dimen name="common_load_more_padding">20dp</dimen>

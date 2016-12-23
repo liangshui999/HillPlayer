@@ -1,6 +1,7 @@
 package com.example.asus.hillplayer.presenter;
 
 import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.lang.ref.WeakReference;
 
 /**
@@ -12,7 +13,7 @@ public abstract class BasePresenter<V>{
     protected Reference<V> mReference;
 
     public void attachView(V view){
-        mReference = new WeakReference<>(view);
+        mReference = new SoftReference<>(view);
     }
 
     public void detachView() {

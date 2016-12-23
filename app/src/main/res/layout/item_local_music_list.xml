@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/padding_10"
+    android:layout_marginBottom="@dimen/marggin_1"
+    android:background="@color/white"
+    >
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        >
+        <TextView
+            android:id="@+id/text_music_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_large"
+            android:text="@string/test_text"
+            android:textColor="@color/primary_text"/>
+
+        <TextView
+            android:id="@+id/text_music_artist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_small"
+            android:text="@string/test_text"
+            android:layout_marginTop="@dimen/marggin_2"
+            android:textColor="@color/secondary_text"/>
+
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/img_close"
+        android:layout_width="@dimen/img_30"
+        android:layout_height="@dimen/img_30"
+        android:src="@mipmap/close"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"/>
+
+</RelativeLayout>

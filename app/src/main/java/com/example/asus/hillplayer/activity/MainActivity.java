@@ -3,6 +3,8 @@ package com.example.asus.hillplayer.activity;
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.widget.Toast;
 
 import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.adapter.ListSlidAdapter;
+import com.example.asus.hillplayer.fragment.LocalMusicListFragment;
 import com.example.asus.hillplayer.presenter.activityPrensenter.PMainActivity;
 import com.example.asus.hillplayer.receiver.INetObserver;
 import com.example.asus.hillplayer.receiver.NetStateReceiver;
@@ -40,13 +43,15 @@ IViewMainActivity{
 
     private VaryViewController mVaryViewController;
 
+    private FragmentManager mFragmentManager;
+
     public static final int LOAD=1;
 
     public static final int ERROR=2;
 
     public static final int TARGET=3;
 
-    private MyHandler myHandler=new MyHandler(this);
+    /*private MyHandler myHandler=new MyHandler(this);
 
     static class MyHandler extends Handler{
 
@@ -81,7 +86,7 @@ IViewMainActivity{
                 }
             }
         }
-    }
+    }*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,8 +117,8 @@ IViewMainActivity{
         ListSlidAdapter adapter=new ListSlidAdapter(this,menus);
         mSlidListView.setAdapter(adapter);
 
-        showLoading("正在加载...");
-        myHandler.sendEmptyMessageDelayed(ERROR,3000);
+//        showLoading("正在加载...");
+//        myHandler.sendEmptyMessageDelayed(ERROR,3000);
 
     }
 
@@ -152,6 +157,12 @@ IViewMainActivity{
         };
         actionBarDrawerToggle.syncState();
         mDrawerLayout.addDrawerListener(actionBarDrawerToggle);
+
+        mFragmentManager = getSupportFragmentManager();
+        LocalMusicListFragment fragment = new LocalMusicListFragment();
+        FragmentTransaction transaction = mFragmentManager.beginTransaction();
+        transaction.add(R.id.ll_container, fragment);
+        transaction.commit();
     }
 
     @Override
