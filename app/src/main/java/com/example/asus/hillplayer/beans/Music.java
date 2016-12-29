@@ -1,10 +1,13 @@
 package com.example.asus.hillplayer.beans;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by asus-cp on 2016-12-22.
  */
 
-public class Music {
+public class Music implements Parcelable{
     private String name;//歌名
 
     private String artist;//作者
@@ -18,6 +21,30 @@ public class Music {
     private int size;//大小
 
     private String data;
+
+    public Music(){}
+
+    protected Music(Parcel in) {
+        name = in.readString();
+        artist = in.readString();
+        duration = in.readString();
+        year = in.readString();
+        mimeType = in.readString();
+        size = in.readInt();
+        data = in.readString();
+    }
+
+    public static final Creator<Music> CREATOR = new Creator<Music>() {
+        @Override
+        public Music createFromParcel(Parcel in) {
+            return new Music(in);
+        }
+
+        @Override
+        public Music[] newArray(int size) {
+            return new Music[size];
+        }
+    };
 
     public String getName() {
         return name;
@@ -86,5 +113,21 @@ public class Music {
                 ", size=" + size +
                 ", data='" + data + '\'' +
                 '}';
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(name);
+        dest.writeString(artist);
+        dest.writeString(duration);
+        dest.writeString(year);
+        dest.writeString(mimeType);
+        dest.writeInt(size);
+        dest.writeString(data);
     }
 }

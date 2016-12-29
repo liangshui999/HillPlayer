@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.adapter.LocalMusicListAdapter;
 import com.example.asus.hillplayer.beans.Music;
+import com.example.asus.hillplayer.constant.MyConstant;
+import com.example.asus.hillplayer.itemderaction.ListDeraction;
 import com.example.asus.hillplayer.presenter.fragmentPresenter.PLocalMusicList;
 import com.example.asus.hillplayer.util.MyLog;
 import com.example.asus.hillplayer.view.fragmentViewL.IViewLoaclMusicList;
@@ -52,12 +54,14 @@ implements IViewLoaclMusicList{
 
     @Override
     public void initData() {
-        mPresenter.fetchMusicList();
-        mMusics = new ArrayList<>();
+        Bundle bundle = getArguments();
+        mMusics = (List<Music>) bundle.getSerializable(MyConstant.TO_MUSIC_ARTIST_LIST_FRAGMENT_KEY);
         mAdapter = new LocalMusicListAdapter(mContext, mMusics);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(mContext,
                 LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(layoutManager);
+        ListDeraction listDeraction = new ListDeraction(mContext);
+        mRecyclerView.addItemDecoration(listDeraction);
         mRecyclerView.setAdapter(mAdapter);
 
     }

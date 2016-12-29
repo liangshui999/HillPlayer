@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.beans.Music;
@@ -45,14 +46,14 @@ public class LocalMusicListAdapter extends RecyclerView.Adapter<LocalMusicListAd
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         Music music = mMusics.get(position);
         holder.nameTextView.setText(music.getName());
         holder.artistTextView.setText(music.getArtist());
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Toast.makeText(mContext, "点击了", Toast.LENGTH_SHORT).show();
             }
         });
         MyLog.d(TAG,"onBindViewHolder"+"position="+position);
