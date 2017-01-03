@@ -1,12 +1,8 @@
 package com.example.asus.hillplayer.activity;
 
-import android.app.Activity;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -16,6 +12,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.asus.hillplayer.R;
@@ -32,8 +29,6 @@ import com.example.asus.hillplayer.util.VaryViewController;
 import com.example.asus.hillplayer.view.activityViewI.IViewMainActivity;
 
 import java.io.Serializable;
-import java.lang.ref.ReferenceQueue;
-import java.lang.ref.SoftReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,7 +41,7 @@ IViewMainActivity{
 
     private ListView mSlidListView;
 
-    private LinearLayout mTargetView;
+    private RelativeLayout mTargetView;
 
     private TabLayout mTabLayout;
 
@@ -75,7 +70,7 @@ IViewMainActivity{
             }
         });
         setContentView(R.layout.activity_main);
-        mTargetView = (LinearLayout) findViewById(R.id.ll_container);
+        mTargetView = (RelativeLayout) findViewById(R.id.ll_container);
         refreshVaryViewController(mTargetView);
         initView();
         initData();
@@ -154,7 +149,7 @@ IViewMainActivity{
         ArtistListFragment artistListFragment = new ArtistListFragment();
 
         Bundle bundle = new Bundle();
-        bundle.putSerializable(MyConstant.TO_MUSIC_ARTIST_LIST_FRAGMENT_KEY, (Serializable) musics);
+        bundle.putSerializable(MyConstant.MUSICS_KEY, (Serializable) musics);
         localMusicListFragment.setArguments(bundle);
         artistListFragment.setArguments(bundle);
 

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.beans.Music;
+import com.example.asus.hillplayer.callback.OnItemClikListenerMy;
 
 import java.util.List;
 
@@ -26,6 +27,8 @@ public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.My
 
     private LayoutInflater mLayoutInflater;
 
+    private OnItemClikListenerMy mOnItemClikListenerMy;
+
     public ArtistListAdapter(Context mContext, List<Music> mMusics) {
         this.mContext = mContext;
         this.mMusics = mMusics;
@@ -40,7 +43,7 @@ public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.My
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, int position) {
+    public void onBindViewHolder(MyViewHolder holder, final int position) {
         Music music = mMusics.get(position);
         holder.nameTextView.setText(music.getArtist());
         holder.countTextView.setText("1"+"首");
@@ -50,6 +53,14 @@ public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.My
                 Toast.makeText(mContext,"点击了",Toast.LENGTH_SHORT).show();
             }
         });
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mOnItemClikListenerMy != null){
+                    mOnItemClikListenerMy.onItemClick(v, position);
+                }
+            }
+        });
     }
 
     @Override
@@ -57,7 +68,9 @@ public class ArtistListAdapter extends RecyclerView.Adapter<ArtistListAdapter.My
         return mMusics.size();
     }
 
-
+    public void setmOnItemClikListenerMy(OnItemClikListenerMy mOnItemClikListenerMy) {
+        this.mOnItemClikListenerMy = mOnItemClikListenerMy;
+    }
 
     class MyViewHolder extends RecyclerView.ViewHolder{
         TextView nameTextView;

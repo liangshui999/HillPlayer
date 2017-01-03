@@ -2,6 +2,7 @@ package com.example.asus.hillplayer.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +12,10 @@ import android.widget.Toast;
 
 import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.beans.Music;
+import com.example.asus.hillplayer.callback.OnItemClikListenerMy;
 import com.example.asus.hillplayer.util.MyLog;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,12 +32,26 @@ public class LocalMusicListAdapter extends RecyclerView.Adapter<LocalMusicListAd
 
     private LayoutInflater mLayoutInflater;
 
+    private OnItemClikListenerMy mOnItemClikListenerMy;
+
+    private List<Boolean> isNeedChangeColor;//记录每一个小项是否需要改变文字颜色
+
     public LocalMusicListAdapter(Context mContext, List<Music> mMusics) {
         TAG = this.getClass().getSimpleName();
         this.mContext = mContext;
         this.mMusics = mMusics;
         mLayoutInflater = LayoutInflater.from(mContext);
+        isNeedChangeColor = new ArrayList<>();
+        for(int i = 0; i < mMusics.size(); i++){
+            isNeedChangeColor.add(false);
+        }
         MyLog.d(TAG, "mMusics="+mMusics);
+    }
+
+    private void allNotSelected(){
+        for(int i = 0; i < mMusics.size(); i++){
+            isNeedChangeColor.set(i, false);
+        }
     }
 
     @Override
@@ -46,10 +63,18 @@ public class LocalMusicListAdapter extends RecyclerView.Adapter<LocalMusicListAd
     }
 
     @Override
-    public void onBindViewHolder(MyViewHolder holder, final int position) {
+    public void onBindViewHolder(final MyViewHolder holder, final int position) {
         Music music = mMusics.get(position);
         holder.nameTextView.setText(music.getName());
         holder.artistTextView.setText(music.getArtist());
+        if(isNeedChangeColor.get(position)){
+            holder.nameTextView.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
+            holder.artistTextView.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
+        }else {
+            holder.nameTextView.setTextColor(mContext.getResources().getColor(R.color.primary_text));
+            holder.artistTextView.setTextColor(mContext.getResources().getColor(R.color.secondary_text));
+        }
+
         holder.imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,6 +82,25 @@ public class LocalMusicListAdapter extends RecyclerView.Adapter<LocalMusicListAd
             }
         });
         MyLog.d(TAG,"onBindViewHolder"+"position="+position);
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(mOnItemClikListenerMy != null){
+                    mOnItemClikListenerMy.onItemClick(v, position);
+                }
+                changItemTextColor(position);
+            }
+        });
+    }
+
+    /**
+     * 改变item的文字颜色
+     * @param position
+     */
+    public void changItemTextColor(int position) {
+        allNotSelected();
+        isNeedChangeColor.set(position, true);
+        notifyDataSetChanged();//之所以点击能改变颜色，这个是核心，这个方法会造成重新调用onBindViewHolder（）方法
     }
 
     @Override
@@ -64,15 +108,19 @@ public class LocalMusicListAdapter extends RecyclerView.Adapter<LocalMusicListAd
         return mMusics.size();
     }
 
+    public void setmOnItemClikListenerMy(OnItemClikListenerMy onItemClikListenerMy){
+        this.mOnItemClikListenerMy = onItemClikListenerMy;
+    }
+
     class MyViewHolder extends RecyclerView.ViewHolder{
 
-        ImageView imageView;
+         ImageView imageView;
 
-        TextView nameTextView;
+         TextView nameTextView;
 
-        TextView artistTextView;
+         TextView artistTextView;
 
-        public MyViewHolder(View itemView) {
+         MyViewHolder(View itemView) {
             super(itemView);
             imageView = (ImageView) itemView.findViewById(R.id.img_close);
             nameTextView = (TextView) itemView.findViewById(R.id.text_music_name);

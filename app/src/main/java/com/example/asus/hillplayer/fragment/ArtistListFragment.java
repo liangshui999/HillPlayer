@@ -10,11 +10,9 @@ import android.view.ViewGroup;
 
 import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.adapter.ArtistListAdapter;
-import com.example.asus.hillplayer.adapter.LocalMusicListAdapter;
 import com.example.asus.hillplayer.beans.Music;
 import com.example.asus.hillplayer.constant.MyConstant;
 import com.example.asus.hillplayer.itemderaction.ListDeraction;
-import com.example.asus.hillplayer.presenter.BasePresenter;
 import com.example.asus.hillplayer.presenter.fragmentPresenter.PArtistList;
 import com.example.asus.hillplayer.util.MyLog;
 import com.example.asus.hillplayer.view.fragmentViewL.IViewArtistList;
@@ -52,7 +50,7 @@ public class ArtistListFragment extends BaseFragment<IViewArtistList, PArtistLis
     public void initData() {
         super.initData();
         Bundle bundle = getArguments();
-        mMusics = (List<Music>) bundle.getSerializable(MyConstant.TO_MUSIC_ARTIST_LIST_FRAGMENT_KEY);
+        mMusics = (List<Music>) bundle.getSerializable(MyConstant.MUSICS_KEY);
 
         MyLog.d(TAG, mMusics.toString());
         mAdapter = new ArtistListAdapter(mContext, mMusics);

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/ll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,16 +28,15 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/viewpager_main_activity"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_below="@id/tab_layout">
 
         </android.support.v4.view.ViewPager>
 
 
-        <!--<TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/test_text"/>-->
-    </LinearLayout>
+
+
+    </RelativeLayout>
 
 
     <LinearLayout
