@@ -3,6 +3,7 @@ package com.example.asus.hillplayer.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +12,10 @@ import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.asus.hillplayer.R;
@@ -48,23 +52,41 @@ implements BaseViewInterface{
 
     protected T mPresenter;
 
-    private Toolbar mToolBar;
+//    private Toolbar mToolBar;
+
+    private RelativeLayout mTilteRelativeLayout;
+
+    private ImageView mBackImageView;
+
+    private TextView mTitleTextView;
 
     private LinearLayout mContentLinearLayout;
+
+    private LinearLayout mParentLinearLayout;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);//禁止横屏
         setContentView(R.layout.activity_base);
         mPresenter = createPresenter();
         mPresenter.attachView((V) this);
+        mParentLinearLayout = (LinearLayout) LayoutInflater.from(this).inflate(R.layout.activity_base, null);
         init();
 
     }
 
     private void init() {
         mContentLinearLayout = (LinearLayout) findViewById(R.id.ll_content);
-        mToolBar= (Toolbar) findViewById(R.id.title);
+        mTilteRelativeLayout = (RelativeLayout) findViewById(R.id.re_layout_title);
+        mBackImageView = (ImageView) findViewById(R.id.img_back);
+        mTitleTextView = (TextView) findViewById(R.id.text_title);
+        mBackImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         TAG = this.getClass().getSimpleName();
         mContext = this;
@@ -81,13 +103,6 @@ implements BaseViewInterface{
         registerReceiver(mNetStateReceiver,intentFilter);
 
 
-        mToolBar.setTitle("base的toolbar");
-        setSupportActionBar(mToolBar);
-        getSupportActionBar().setHomeButtonEnabled(true);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mToolBar.setTitleTextColor(getResources().getColor(R.color.white));
-
-
     }
 
 
@@ -98,22 +113,22 @@ implements BaseViewInterface{
         unregisterReceiver(mNetStateReceiver);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
+    /*@Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.img_back:
+                showToast("haha");
                 finish();
-                break;
+            break;
         }
-        return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     /**
      * 设置内容的布局
      * @param contentId
      */
     public void setContentLayout(int contentId){
-        View v = LayoutInflater.from(this).inflate(contentId, null);
+        View v = LayoutInflater.from(this).inflate(contentId, mParentLinearLayout, false);//使用这种方式contentId的布局参数不会丢失
         setContentLayout(v);
     }
 
@@ -128,7 +143,7 @@ implements BaseViewInterface{
      * 隐藏头部
      */
     public void hideTitle(){
-        mToolBar.setVisibility(View.GONE);
+        mTilteRelativeLayout.setVisibility(View.GONE);
     }
 
     /**
@@ -136,7 +151,7 @@ implements BaseViewInterface{
      * @param title
      */
     public void setTitle(String title){
-        mToolBar.setTitle(title);
+        mTitleTextView.setText(title);
     }
 
     /**
@@ -144,7 +159,7 @@ implements BaseViewInterface{
      * @param resId
      */
     public void setTitle(int resId){
-        mToolBar.setTitle(resId);
+        mTitleTextView.setText(resId);
     }
 
     @Override

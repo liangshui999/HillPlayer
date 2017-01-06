@@ -7,6 +7,8 @@ package com.example.asus.hillplayer.constant;
 public interface MyConstant {
     String MUSICS_KEY = "toloaclmusiclist";//传递音乐列表的key
 
+    String MUSIC_KEY = "musickey";
+
     String MUSIC_INDEX_KEY = "musicindex";
 
     String MUSIC_STATE_KEY = "musicstatekey";

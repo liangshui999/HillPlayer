@@ -19,6 +19,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.MusicPalyerAcitivity"
+            />
+
         <activity android:name=".activity.TestActivity">
 
         </activity>

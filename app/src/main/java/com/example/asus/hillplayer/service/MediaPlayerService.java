@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
@@ -24,7 +25,7 @@ import java.util.Random;
  */
 
 public class MediaPlayerService extends Service implements MediaPlayer.OnPreparedListener,
-        MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener{
+        MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener, MediaPlayer.OnSeekCompleteListener{
 
     private static String TAG;
 
@@ -42,6 +43,8 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     private int mCurrentMusicIndex;//当前音乐在音乐列表里面的索引
 
+    private int mCurrentState;
+
     private List<Integer> mRandomIndexList;//随机播放的索引列表
 
     private Random mRandom;
@@ -57,6 +60,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         mMediaPlayer.setOnErrorListener(this);
         mMediaPlayer.setOnPreparedListener(this);
         mMediaPlayer.setOnCompletionListener(this);
+        mMediaPlayer.setOnSeekCompleteListener(this);
         mRandomIndexList = new ArrayList<>();
         mRandom = new Random();
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
@@ -65,7 +69,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent != null){
-            int state = intent.getIntExtra(MyConstant.MUSIC_STATE_KEY, MusicState.IDLE);
+            mCurrentState = intent.getIntExtra(MyConstant.MUSIC_STATE_KEY, MusicState.IDLE);
             mCurrentPath = intent.getStringExtra(MyConstant.MUSIC_PATH_KEY);
             mCurrentModle = intent.getIntExtra(MyConstant.MUSIC_MODEL_KEY, MusicModle.ORDER);
             mMusics = (List<Music>) intent.getSerializableExtra(MyConstant.MUSICS_KEY);
@@ -73,7 +77,9 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 mCurrentMusicIndex = getIndexByPath(mCurrentPath, mMusics);
             }
 
-            switch(state){
+            MyLog.d(TAG, "mCurrentState="+ mCurrentState +"...."+"mCurrentPath="+mCurrentPath+"....."+"mCurrentMusicIndex="+mCurrentMusicIndex);
+
+            switch(mCurrentState){
                 case MusicState.START://这个内部分为2种情况
                     startPlayMusic();
                     break;
@@ -103,7 +109,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 e.printStackTrace();
             }
         }
-        sendCurrentMusicInfo();
     }
 
     /**
@@ -145,12 +150,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new MediaBinder();
     }
 
 
     @Override
     public void onPrepared(MediaPlayer mp) {
+        sendCurrentMusicInfo();
         mp.start();
         mLastPath = mCurrentPath;
 
@@ -196,6 +202,34 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
             case MusicModle.SINGLE:
                 startPlayMusic();
                 break;
+        }
+    }
+
+
+    @Override
+    public void onSeekComplete(MediaPlayer mp) {
+        /*switch(mCurrentState){
+            case MusicState.START://这个内部分为2种情况
+                mMediaPlayer.start();
+                break;
+            case MusicState.PAUSE:
+                mMediaPlayer.pause();
+                break;
+        }*/
+    }
+
+    public class MediaBinder extends Binder{
+
+        public void seekTo(int progress){
+            mMediaPlayer.seekTo(progress);
+        }
+
+        public int getProgress(){
+            return mMediaPlayer.getCurrentPosition();
+        }
+
+        public int getSumProgress(){
+            return mMediaPlayer.getDuration();
         }
     }
 

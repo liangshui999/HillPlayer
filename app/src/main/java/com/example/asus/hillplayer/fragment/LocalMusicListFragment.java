@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.asus.hillplayer.R;
+import com.example.asus.hillplayer.activity.MainActivity;
 import com.example.asus.hillplayer.adapter.LocalMusicListAdapter;
 import com.example.asus.hillplayer.beans.Music;
 import com.example.asus.hillplayer.callback.OnItemClikListenerMy;
@@ -45,6 +46,8 @@ implements IViewLoaclMusicList{
     private LocalBroadcastManager mLocalBroadcastManager;
 
     private CurrentMusicReciver mCurrentMusicReciver;
+
+    private MainActivity mMainActivity;
 
 
     @Nullable
@@ -86,6 +89,7 @@ implements IViewLoaclMusicList{
                 mContext.startService(intent);
             }
         });
+        mMainActivity = (MainActivity) getActivity();
 
     }
 

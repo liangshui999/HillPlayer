@@ -65,7 +65,7 @@ public class ModleMainActivity implements IModleMainActivity {
                 while(cursor.moveToNext()){
                     Music music = new Music();
                     music.setName(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DISPLAY_NAME)));
-                    music.setDuration(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
+                    music.setDuration(cursor.getInt(cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)));
                     music.setArtist(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)));
                     music.setYear(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.YEAR)));
                     music.setMimeType(cursor.getString(cursor.getColumnIndex(MediaStore.Audio.Media.MIME_TYPE)));

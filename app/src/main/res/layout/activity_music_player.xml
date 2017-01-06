@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/colorPrimary">
+
+
+    </LinearLayout>
+
+
+    <!--进度条所在的布局-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="@dimen/padding_10"
+        android:paddingBottom="@dimen/padding_10">
+        <TextView
+            android:id="@+id/text_play_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_12"
+            android:textColor="@color/secondary_text"
+            android:text="@string/test_time"
+            android:layout_marginLeft="@dimen/marggin_10"
+            android:layout_marginRight="@dimen/marggin_10"
+            android:layout_gravity="center_vertical"/>
+
+        <android.support.v7.widget.AppCompatSeekBar
+            android:id="@+id/seek_bar"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            />
+
+        <TextView
+            android:id="@+id/text_sum_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/font_12"
+            android:textColor="@color/secondary_text"
+            android:text="@string/test_time"
+            android:layout_marginLeft="@dimen/marggin_10"
+            android:layout_marginRight="@dimen/marggin_10"
+            android:layout_gravity="center_vertical"/>
+
+    </LinearLayout>
+
+
+
+    <!--控制按钮所在的布局-->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/marggin_20"
+        android:layout_marginBottom="@dimen/marggin_20"
+        android:padding="@dimen/padding_10">
+        <ImageView
+            android:id="@+id/img_play"
+            android:layout_width="@dimen/img_40"
+            android:layout_height="@dimen/img_40"
+            android:src="@mipmap/play_big"
+            android:layout_centerInParent="true"/>
+
+        <ImageView
+            android:id="@+id/img_mode"
+            android:layout_width="@dimen/img_20"
+            android:layout_height="@dimen/img_20"
+            android:src="@mipmap/order"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="@dimen/marggin_10"/>
+
+        <ImageView
+            android:id="@+id/img_previous"
+            android:layout_width="@dimen/img_20"
+            android:layout_height="@dimen/img_20"
+            android:layout_toLeftOf="@id/img_play"
+            android:src="@mipmap/previous_blue"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="@dimen/marggin_30"/>
+
+        <ImageView
+            android:id="@+id/img_next"
+            android:layout_width="@dimen/img_20"
+            android:layout_height="@dimen/img_20"
+            android:layout_toRightOf="@id/img_play"
+            android:src="@mipmap/next_blue"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/marggin_30"/>
+
+    </RelativeLayout>
+
+</LinearLayout>

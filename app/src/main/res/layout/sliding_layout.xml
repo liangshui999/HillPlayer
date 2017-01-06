@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/ll_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -28,15 +28,68 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/viewpager_main_activity"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:layout_below="@id/tab_layout">
 
         </android.support.v4.view.ViewPager>
 
+        <RelativeLayout
+            android:id="@+id/re_layout_control_pannel"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:padding="@dimen/padding_10"
+            android:background="@color/WhiteSmoke">
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:orientation="vertical">
+                <TextView
+                    android:id="@+id/text_music_name"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/primary_text"
+                    android:textSize="@dimen/font_14"
+                    android:text="@string/test_text"
+                    android:maxLines="1"
+                    />
+                <TextView
+                    android:id="@+id/text_artist_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/secondary_text"
+                    android:textSize="@dimen/font_12"
+                    android:text="@string/test_text"
+                    android:layout_marginTop="@dimen/marggin_2"/>
+
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/img_next"
+                android:layout_width="@dimen/img_20"
+                android:layout_height="@dimen/img_20"
+                android:src="@mipmap/next_blue"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="@dimen/marggin_20"
+                android:layout_centerVertical="true"/>
+
+            <ImageView
+                android:id="@+id/img_play"
+                android:layout_width="@dimen/img_20"
+                android:layout_height="@dimen/img_20"
+                android:src="@mipmap/pause_blue"
+                android:layout_toLeftOf="@id/img_next"
+                android:layout_marginRight="@dimen/marggin_20"
+                android:layout_centerVertical="true"/>
+
+        </RelativeLayout>
 
 
 
-    </RelativeLayout>
+
+    </LinearLayout>
 
 
     <LinearLayout

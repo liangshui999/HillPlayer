@@ -12,7 +12,7 @@ public class Music implements Parcelable{
 
     private String artist;//作者
 
-    private String duration;//时长
+    private int duration;//时长
 
     private String year;
 
@@ -27,7 +27,7 @@ public class Music implements Parcelable{
     protected Music(Parcel in) {
         name = in.readString();
         artist = in.readString();
-        duration = in.readString();
+        duration = in.readInt();
         year = in.readString();
         mimeType = in.readString();
         size = in.readInt();
@@ -70,11 +70,11 @@ public class Music implements Parcelable{
         this.year = year;
     }
 
-    public String getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 
@@ -124,7 +124,7 @@ public class Music implements Parcelable{
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(name);
         dest.writeString(artist);
-        dest.writeString(duration);
+        dest.writeInt(duration);
         dest.writeString(year);
         dest.writeString(mimeType);
         dest.writeInt(size);

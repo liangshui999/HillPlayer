@@ -8,6 +8,10 @@
     <color name="secondary_text">#757575</color>
     <color name="divider_color">#bdbdbd</color>
 
+    <color name="Honeydew">#F0FFF0</color>
+    <color name="Snow">#FFFAFA</color>
+    <color name="WhiteSmoke">#F5F5F5</color>
+
 
     <!--下面2种是推荐的命名方式-->
     <!-- grayscale -->

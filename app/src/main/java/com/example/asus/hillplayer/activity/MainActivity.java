@@ -1,8 +1,13 @@
 package com.example.asus.hillplayer.activity;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -10,21 +15,25 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.adapter.ListSlidAdapter;
 import com.example.asus.hillplayer.adapter.MusicFragmentAdapter;
 import com.example.asus.hillplayer.beans.Music;
+import com.example.asus.hillplayer.constant.MusicState;
 import com.example.asus.hillplayer.constant.MyConstant;
 import com.example.asus.hillplayer.fragment.ArtistListFragment;
 import com.example.asus.hillplayer.fragment.LocalMusicListFragment;
 import com.example.asus.hillplayer.presenter.activityPrensenter.PMainActivity;
 import com.example.asus.hillplayer.receiver.INetObserver;
 import com.example.asus.hillplayer.receiver.NetStateReceiver;
+import com.example.asus.hillplayer.service.MediaPlayerService;
 import com.example.asus.hillplayer.util.VaryViewController;
 import com.example.asus.hillplayer.view.activityViewI.IViewMainActivity;
 
@@ -33,7 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends BaseActivity<IViewMainActivity,PMainActivity> implements
-IViewMainActivity{
+IViewMainActivity, View.OnClickListener{
 
     private Toolbar mToolBar;
 
@@ -41,17 +50,37 @@ IViewMainActivity{
 
     private ListView mSlidListView;
 
-    private RelativeLayout mTargetView;
+    private LinearLayout mTargetView;
 
     private TabLayout mTabLayout;
 
     private ViewPager mViewPager;
+
+    private TextView mMusicNameTextView;
+
+    private TextView mArtistNameTextView;
+
+    private ImageView mPlayImageView;
+
+    private ImageView mNextImageView;
+
+    private RelativeLayout mControlPannelLayout;
 
     private NetStateReceiver mNetStateReceiver;
 
     private VaryViewController mVaryViewController;
 
     private FragmentManager mFragmentManager;
+
+    private List<Music> mMusics;
+
+    private LocalBroadcastManager mLocalBroadcastManager;
+
+    private CurrentMusicReciver mCurrentMusicReciver;
+
+    private int mCurrentMusicState = MusicState.PAUSE;
+
+    private int mCurrentMusicIndex;
 
 
     @Override
@@ -70,7 +99,7 @@ IViewMainActivity{
             }
         });
         setContentView(R.layout.activity_main);
-        mTargetView = (RelativeLayout) findViewById(R.id.ll_container);
+        mTargetView = (LinearLayout) findViewById(R.id.ll_container);
         refreshVaryViewController(mTargetView);
         initView();
         initData();
@@ -91,6 +120,7 @@ IViewMainActivity{
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mLocalBroadcastManager.unregisterReceiver(mCurrentMusicReciver);
     }
 
     @Override
@@ -100,6 +130,15 @@ IViewMainActivity{
         mSlidListView= (ListView) findViewById(R.id.list_slid_menu);
         mTabLayout = (TabLayout) findViewById(R.id.tab_layout);
         mViewPager = (ViewPager) findViewById(R.id.viewpager_main_activity);
+        mMusicNameTextView = (TextView) findViewById(R.id.text_music_name);
+        mArtistNameTextView = (TextView) findViewById(R.id.text_artist_name);
+        mPlayImageView = (ImageView) findViewById(R.id.img_play);
+        mNextImageView = (ImageView) findViewById(R.id.img_next);
+        mControlPannelLayout = (RelativeLayout) findViewById(R.id.re_layout_control_pannel);
+
+        mPlayImageView.setOnClickListener(this);
+        mNextImageView.setOnClickListener(this);
+        mControlPannelLayout.setOnClickListener(this);
     }
 
     @Override
@@ -128,10 +167,12 @@ IViewMainActivity{
 
         mFragmentManager = getSupportFragmentManager();
         mPresenter.fetchData();
-//        LocalMusicListFragment fragment = new LocalMusicListFragment();
-//        FragmentTransaction transaction = mFragmentManager.beginTransaction();
-//        transaction.add(R.id.ll_container, fragment);
-//        transaction.commit();
+
+        mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
+        mCurrentMusicReciver = new CurrentMusicReciver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(MyConstant.CURRENT_MUSIC_RECEIVER_ACTION);
+        mLocalBroadcastManager.registerReceiver(mCurrentMusicReciver, intentFilter);
 
 
     }
@@ -153,7 +194,6 @@ IViewMainActivity{
         localMusicListFragment.setArguments(bundle);
         artistListFragment.setArguments(bundle);
 
-
         List<String> titles = new ArrayList<>(2);
         titles.add(getString(R.string.music_list));
         titles.add(getString(R.string.artist));
@@ -163,8 +203,7 @@ IViewMainActivity{
         MusicFragmentAdapter adapter = new MusicFragmentAdapter(mFragmentManager, fragments, titles);
         mViewPager.setAdapter(adapter);
         mTabLayout.setupWithViewPager(mViewPager);
-
-
+        mMusics = musics;
 
     }
 
@@ -174,6 +213,63 @@ IViewMainActivity{
             mDrawerLayout.closeDrawer(Gravity.LEFT);
         }else{
             finish();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()){
+            case R.id.img_play:
+                if(mCurrentMusicState == MusicState.PAUSE){
+                    mCurrentMusicState = MusicState.START;
+                    startMusicService(MusicState.START);
+                    mPlayImageView.setImageResource(R.mipmap.play_blue);
+                }else{
+                    mCurrentMusicState = MusicState.PAUSE;
+                    startMusicService(MusicState.PAUSE);
+                    mPlayImageView.setImageResource(R.mipmap.pause_blue);
+                }
+                break;
+            case R.id.img_next:
+                mCurrentMusicIndex++;
+                if(mCurrentMusicIndex == mMusics.size()){
+                    mCurrentMusicIndex = 0;
+                }
+                startMusicService(MusicState.START);
+                break;
+            case R.id.re_layout_control_pannel:
+                Intent intent = new Intent(this, MusicPalyerAcitivity.class);
+                intent.putExtra(MyConstant.MUSIC_INDEX_KEY, mCurrentMusicIndex);
+                intent.putExtra(MyConstant.MUSICS_KEY, (Serializable) mMusics);
+                intent.putExtra(MyConstant.MUSIC_STATE_KEY, mCurrentMusicState);
+                startActivity(intent);
+                break;
+        }
+    }
+
+    /**
+     * 开启播放音乐服务
+     * @param pause
+     */
+    public void startMusicService(int pause) {
+        Intent intent = new Intent(this, MediaPlayerService.class);
+        intent.putExtra(MyConstant.MUSIC_STATE_KEY, pause);
+        intent.putExtra(MyConstant.MUSIC_PATH_KEY, mMusics.get(mCurrentMusicIndex).getData());
+        intent.putExtra(MyConstant.MUSICS_KEY, (Serializable) mMusics);
+        startService(intent);
+    }
+
+
+    public class CurrentMusicReciver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int index = intent.getIntExtra(MyConstant.MUSIC_INDEX_KEY, -1);
+            Music music = mMusics.get(index);
+            mMusicNameTextView.setText(music.getName());
+            mArtistNameTextView.setText(music.getArtist());
+            mPlayImageView.setImageResource(R.mipmap.play_blue);
+            mCurrentMusicState = MusicState.START;
+            mCurrentMusicIndex = index;
         }
     }
 }
