@@ -15,6 +15,8 @@ import com.example.asus.hillplayer.constant.MusicState;
 import com.example.asus.hillplayer.constant.MyConstant;
 import com.example.asus.hillplayer.util.MyLog;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +71,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if(intent != null){
-            mCurrentState = intent.getIntExtra(MyConstant.MUSIC_STATE_KEY, MusicState.IDLE);
+            mCurrentState = intent.getIntExtra(MyConstant.MUSIC_STATE_KEY, MusicState.PAUSE);
             mCurrentPath = intent.getStringExtra(MyConstant.MUSIC_PATH_KEY);
             mCurrentModle = intent.getIntExtra(MyConstant.MUSIC_MODEL_KEY, MusicModle.ORDER);
             mMusics = (List<Music>) intent.getSerializableExtra(MyConstant.MUSICS_KEY);
@@ -85,6 +87,12 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                     break;
                 case MusicState.PAUSE:
                     mMediaPlayer.pause();
+                    break;
+                case MusicState.NEXT:
+                    playNextMusic();
+                    break;
+                case MusicState.PREVIOUS:
+                    playPreviouMusic();
                     break;
             }
         }
@@ -103,8 +111,10 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         }else{
             mMediaPlayer.reset();
             try {
-                mMediaPlayer.setDataSource(mCurrentPath);
-                mMediaPlayer.prepareAsync();
+                if(mCurrentPath != null){
+                    mMediaPlayer.setDataSource(mCurrentPath);
+                    mMediaPlayer.prepareAsync();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -165,12 +175,22 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
         MyLog.d(TAG, "what="+what+"...."+"extra="+extra);
+        //万一崩了之后，重新准备再来，非常容易报这种错 E/MediaPlayer: Error (-38,0)
         mp.reset();
+        startPlayMusic();
         return true;
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        playNextMusic();
+    }
+
+
+    /**
+     * 播放下一首歌
+     */
+    public void playNextMusic() {
         switch (mCurrentModle){
             case MusicModle.ORDER:
                 if(mCurrentMusicIndex != -1){
@@ -187,6 +207,45 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 if(mCurrentMusicIndex != -1){
                     mCurrentMusicIndex++;
                     if(mCurrentMusicIndex == mMusics.size()){
+                        mCurrentMusicIndex = 0;
+                    }
+                    mCurrentPath = mMusics.get(mCurrentMusicIndex).getData();
+                    startPlayMusic();
+                }
+                break;
+            case MusicModle.RANDOM:
+                mCurrentMusicIndex = mRandom.nextInt(mMusics.size());
+                mCurrentPath = mMusics.get(mCurrentMusicIndex).getData();
+                startPlayMusic();
+                sendCurrentMusicInfo();
+                break;
+            case MusicModle.SINGLE:
+                startPlayMusic();
+                break;
+        }
+    }
+
+
+    /**
+     * 播放上一首歌
+     */
+    public void playPreviouMusic(){
+        switch (mCurrentModle){
+            case MusicModle.ORDER:
+                if(mCurrentMusicIndex != -1){
+                    mCurrentMusicIndex--;
+                    if(mCurrentMusicIndex >= 0){
+                        mCurrentPath = mMusics.get(mCurrentMusicIndex).getData();
+                        startPlayMusic();
+                    }else{
+                        mMediaPlayer.pause();
+                    }
+                }
+                break;
+            case MusicModle.CYCLE:
+                if(mCurrentMusicIndex != -1){
+                    mCurrentMusicIndex--;
+                    if(mCurrentMusicIndex < 0){
                         mCurrentMusicIndex = 0;
                     }
                     mCurrentPath = mMusics.get(mCurrentMusicIndex).getData();

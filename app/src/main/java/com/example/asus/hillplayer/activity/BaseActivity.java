@@ -192,6 +192,10 @@ implements BaseViewInterface{
         Toast.makeText(mContext, msg, Toast.LENGTH_SHORT).show();
     }
 
+    public void showToast(int resId){
+        Toast.makeText(mContext, getResources().getString(resId), Toast.LENGTH_SHORT).show();
+    }
+
     public void readyGo(Class<?> clz){
         Intent intent = new Intent(this, clz);
         startActivity(intent);
@@ -226,7 +230,7 @@ implements BaseViewInterface{
     /**
      * 手动设置viewcontroller
      */
-    protected void refreshVaryViewController(View v){
+    protected void updateVaryViewController(View v){
         mVaryViewController = new VaryViewController(new VaryViewHelper(v));
     }
 

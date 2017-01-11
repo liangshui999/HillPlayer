@@ -100,7 +100,7 @@ IViewMainActivity, View.OnClickListener{
         });
         setContentView(R.layout.activity_main);
         mTargetView = (LinearLayout) findViewById(R.id.ll_container);
-        refreshVaryViewController(mTargetView);
+        updateVaryViewController(mTargetView);
         initView();
         initData();
 

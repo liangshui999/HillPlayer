@@ -12,6 +12,12 @@
     <string name="local_music">本地音乐</string>
     <string name="music_list">音乐列表</string>
     <string name="artist">歌手</string>
+    <string name="order_mode">顺序模式</string>
+    <string name="cycle_mode">循环模式</string>
+    <string name="random_mode">随机模式</string>
+    <string name="single_cycle_mode">单曲循环模式</string>
+
+    <string name="not_found_lyric">很抱歉，没有找到歌词信息</string>
 
     <string name="common_loading_message">Loading...</string>
     <string name="common_empty_msg">Oops, failed to resolve data\nPlease hit the screen and try again~</string>

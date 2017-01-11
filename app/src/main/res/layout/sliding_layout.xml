@@ -52,7 +52,6 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/primary_text"
                     android:textSize="@dimen/font_14"
-                    android:text="@string/test_text"
                     android:maxLines="1"
                     />
                 <TextView
@@ -61,7 +60,6 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/secondary_text"
                     android:textSize="@dimen/font_12"
-                    android:text="@string/test_text"
                     android:layout_marginTop="@dimen/marggin_2"/>
 
             </LinearLayout>

@@ -6,13 +6,13 @@ package com.example.asus.hillplayer.constant;
 
 public interface MusicModle {
 
-    int RANDOM= 0;
+    int ORDER = 0;
 
-    int ORDER = 1;
+    int CYCLE = 1;
 
-    int SINGLE = 2;
+    int RANDOM= 2;
 
-    int CYCLE = 3;
+    int SINGLE = 3;
 
 
 }

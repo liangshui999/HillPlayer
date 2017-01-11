@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="LyricTextView">
+        <attr name="current_lyric_color" format="color"/>
+        <attr name="normal_lyric_color" format="color"/>
+        <attr name="current_lyric_size" format="dimension"/>
+        <attr name="normal_lyric_size" format="dimension"/>
+        <attr name="lyric_space_size" format="dimension"/>
+    </declare-styleable>
+</resources>

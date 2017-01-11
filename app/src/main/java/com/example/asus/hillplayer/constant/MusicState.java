@@ -13,4 +13,8 @@ public interface MusicState {
     int STOP = 2;
 
     int IDLE = 4;
+
+    int NEXT = 5;
+
+    int PREVIOUS = 6;
 }
