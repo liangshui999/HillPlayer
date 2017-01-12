@@ -7,10 +7,8 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -19,6 +17,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.asus.hillplayer.R;
+import com.example.asus.hillplayer.callback.OnClickListnerMy;
+import com.example.asus.hillplayer.callback.OnItemClikListenerMy;
 import com.example.asus.hillplayer.presenter.BasePresenter;
 import com.example.asus.hillplayer.receiver.INetObserver;
 import com.example.asus.hillplayer.receiver.NetStateReceiver;
@@ -52,6 +52,8 @@ implements BaseViewInterface{
 
     protected T mPresenter;
 
+    private OnClickListnerMy mOnClikListenerMy;
+
 //    private Toolbar mToolBar;
 
     private RelativeLayout mTilteRelativeLayout;
@@ -84,7 +86,11 @@ implements BaseViewInterface{
         mBackImageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                if(mOnClikListenerMy != null){
+                    mOnClikListenerMy.onClick(v);
+                }else{
+                    finish();
+                }
             }
         });
 
@@ -160,6 +166,11 @@ implements BaseViewInterface{
      */
     public void setTitle(int resId){
         mTitleTextView.setText(resId);
+    }
+
+
+    public void setOnBackClickListner(OnClickListnerMy onClikListenerMy){
+        mOnClikListenerMy = onClikListenerMy;
     }
 
     @Override

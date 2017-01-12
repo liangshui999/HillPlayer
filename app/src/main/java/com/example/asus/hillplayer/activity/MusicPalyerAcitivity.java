@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.example.asus.hillplayer.R;
 import com.example.asus.hillplayer.beans.Lyric;
 import com.example.asus.hillplayer.beans.Music;
+import com.example.asus.hillplayer.callback.OnClickListnerMy;
 import com.example.asus.hillplayer.constant.MusicModle;
 import com.example.asus.hillplayer.constant.MusicState;
 import com.example.asus.hillplayer.constant.MyConstant;
@@ -186,7 +187,30 @@ implements IViewMusicPlayerActivity, View.OnClickListener{
         intentFilter.addAction(MyConstant.CURRENT_MUSIC_RECEIVER_ACTION);
         mLocalBroadcastManager.registerReceiver(mCurrentMusicReciver, intentFilter);
 
+        //获取歌词
         mPresenter.readLyric(mCurrentMusic.getName());
+
+        setOnBackClickListner(new OnClickListnerMy() {
+            @Override
+            public void onClick(View v) {
+                backHandle();
+            }
+        });
+    }
+
+    /**
+     * 返回键的点击事件处理
+     */
+    private void backHandle() {
+        Intent intent2 = new Intent();
+        intent2.putExtra(MyConstant.MUSIC_STATE_KEY, mCurrentMusicState);
+        setResult(RESULT_OK, intent2);
+        finish();
+    }
+
+    @Override
+    public void onBackPressed() {
+        backHandle();
     }
 
     @Override
@@ -194,7 +218,8 @@ implements IViewMusicPlayerActivity, View.OnClickListener{
         if(lyrics.size() == 0){
             showError(R.string.not_found_lyric, null);
         }else{
-            mLyricTextView.setmLyrics(lyrics);
+            mLyricTextView.setmLyrics(lyrics, mCurrentMusicState);
+
         }
     }
 
@@ -278,14 +303,22 @@ implements IViewMusicPlayerActivity, View.OnClickListener{
     public class CurrentMusicReciver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            mCurrentMusicState = intent.getIntExtra(MyConstant.MUSIC_STATE_KEY, MusicState.START);
             int index = intent.getIntExtra(MyConstant.MUSIC_INDEX_KEY, -1);
             Music music = mMusics.get(index);
             mCurrentMusic = music;
             mCurrentMusicIndex = index;
+
             setTitle(music.getName());
             mSeekBar.setMax(music.getDuration());//换到下一首的时候必须重新设置max
             mSumTimeTextView.setText(TimeHelper.convertMS2StanrdTime(music.getDuration()));
+            mPresenter.readLyric(mCurrentMusic.getName());
 
+            if(mCurrentMusicState == MusicState.START){
+                mPlayImageView.setImageResource(R.mipmap.play_big);
+            }else if(mCurrentMusicState == MusicState.PAUSE){
+                mPlayImageView.setImageResource(R.mipmap.pause_big);
+            }
         }
     }
 
@@ -316,6 +349,7 @@ implements IViewMusicPlayerActivity, View.OnClickListener{
             super.onProgressUpdate(values);
             mSeekBar.setProgress(values[0]);
             mPlayTimeTextView.setText(TimeHelper.convertMS2StanrdTime(values[0]));
+
             if(mIsFirst){
                 mLyricTextView.setProgress(values[0], mCurrentMusicState);
                 mIsFirst = false;

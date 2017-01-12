@@ -170,12 +170,17 @@ public class LyricTextView extends TextView{
      * 添加歌词数据
      * @param lyrics
      */
-    public void setmLyrics(List<Lyric> lyrics) {
+    public void setmLyrics(List<Lyric> lyrics, int currentMusicState) {
         mLyrics.clear();
         mLyrics.addAll(lyrics);
+        mCurrentPosition = 0;
         //通知重新绘制
         invalidate();
-        handler.sendEmptyMessageDelayed(REFRESH_FLAG, (long) mLyrics.get(mCurrentPosition).getPlayTime());
+        handler.removeMessages(REFRESH_FLAG);
+        if(currentMusicState == MusicState.START){
+            handler.sendEmptyMessageDelayed(REFRESH_FLAG, (long) mLyrics.get(0).getPlayTime());
+        }
+
     }
 
     /**

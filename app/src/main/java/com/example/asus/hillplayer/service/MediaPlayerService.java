@@ -37,7 +37,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     private String mSingleMusicPath;//单曲播放的时候，该单曲的路径
 
-    private String mLastPath = "";//上一首歌的路径
+    private String mLastPath ;//上一首歌的路径
 
     private String mCurrentPath;//当前音乐的路径
 
@@ -88,7 +88,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 case MusicState.PAUSE:
                     mMediaPlayer.pause();
                     break;
-                case MusicState.NEXT:
+                case MusicState.NEXT:   //播放下一首
                     playNextMusic();
                     break;
                 case MusicState.PREVIOUS:
@@ -105,8 +105,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
      * 开始播放音乐
      */
     private void startPlayMusic() {
-        if(mLastPath != null && mLastPath.equals(mCurrentPath)
-                && !"".equals(mCurrentPath)){
+        if(mLastPath != null && mLastPath.equals(mCurrentPath)){    //说明是同一首歌暂停之后
             mMediaPlayer.start();
         }else{
             mMediaPlayer.reset();
@@ -121,14 +120,7 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
         }
     }
 
-    /**
-     * 发送当前音乐的广播
-     */
-    private void sendCurrentMusicInfo() {
-        Intent intent = new Intent(MyConstant.CURRENT_MUSIC_RECEIVER_ACTION);
-        intent.putExtra(MyConstant.MUSIC_INDEX_KEY, mCurrentMusicIndex);
-        mLocalBroadcastManager.sendBroadcast(intent);
-    }
+
 
     @Override
     public void onDestroy() {
@@ -166,11 +158,22 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public void onPrepared(MediaPlayer mp) {
-        sendCurrentMusicInfo();
         mp.start();
         mLastPath = mCurrentPath;
-
+        mCurrentState = MusicState.START;
+        sendCurrentMusicInfo();//每次准备好了，开始播放的时候都会发出广播
     }
+
+    /**
+     * 发送当前音乐的广播
+     */
+    private void sendCurrentMusicInfo() {
+        Intent intent = new Intent(MyConstant.CURRENT_MUSIC_RECEIVER_ACTION);
+        intent.putExtra(MyConstant.MUSIC_INDEX_KEY, mCurrentMusicIndex);
+        intent.putExtra(MyConstant.MUSIC_STATE_KEY, mCurrentState);
+        mLocalBroadcastManager.sendBroadcast(intent);
+    }
+
 
     @Override
     public boolean onError(MediaPlayer mp, int what, int extra) {
@@ -191,22 +194,22 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
      * 播放下一首歌
      */
     public void playNextMusic() {
-        switch (mCurrentModle){
+        switch (mCurrentModle) {
             case MusicModle.ORDER:
-                if(mCurrentMusicIndex != -1){
+                if (mCurrentMusicIndex != -1) {
                     mCurrentMusicIndex++;
-                    if(mCurrentMusicIndex < mMusics.size()){
+                    if (mCurrentMusicIndex < mMusics.size()) {
                         mCurrentPath = mMusics.get(mCurrentMusicIndex).getData();
                         startPlayMusic();
-                    }else{
+                    } else {
                         mMediaPlayer.pause();
                     }
                 }
                 break;
             case MusicModle.CYCLE:
-                if(mCurrentMusicIndex != -1){
+                if (mCurrentMusicIndex != -1) {
                     mCurrentMusicIndex++;
-                    if(mCurrentMusicIndex == mMusics.size()){
+                    if (mCurrentMusicIndex == mMusics.size()) {
                         mCurrentMusicIndex = 0;
                     }
                     mCurrentPath = mMusics.get(mCurrentMusicIndex).getData();
@@ -217,12 +220,13 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 mCurrentMusicIndex = mRandom.nextInt(mMusics.size());
                 mCurrentPath = mMusics.get(mCurrentMusicIndex).getData();
                 startPlayMusic();
-                sendCurrentMusicInfo();
                 break;
             case MusicModle.SINGLE:
                 startPlayMusic();
                 break;
         }
+
+
     }
 
 
@@ -256,7 +260,6 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
                 mCurrentMusicIndex = mRandom.nextInt(mMusics.size());
                 mCurrentPath = mMusics.get(mCurrentMusicIndex).getData();
                 startPlayMusic();
-                sendCurrentMusicInfo();
                 break;
             case MusicModle.SINGLE:
                 startPlayMusic();
@@ -267,22 +270,25 @@ public class MediaPlayerService extends Service implements MediaPlayer.OnPrepare
 
     @Override
     public void onSeekComplete(MediaPlayer mp) {
-        /*switch(mCurrentState){
-            case MusicState.START://这个内部分为2种情况
-                mMediaPlayer.start();
-                break;
-            case MusicState.PAUSE:
-                mMediaPlayer.pause();
-                break;
-        }*/
+
     }
 
     public class MediaBinder extends Binder{
 
+        /**
+         * 这是MusicPlayerActivity手动拖动进度条的时候，我这边的音乐也必须跟着切换
+         * @param progress
+         */
         public void seekTo(int progress){
             mMediaPlayer.seekTo(progress);
         }
 
+        /**
+         * MusicPlayerActivity的进度条和歌词显示需要频繁的获取正在播放的进度
+         * 频繁获取使用广播是不合适的，只能让对方绑定上来才比较合适
+         * 主要用于显示
+         * @return
+         */
         public int getProgress(){
             return mMediaPlayer.getCurrentPosition();
         }

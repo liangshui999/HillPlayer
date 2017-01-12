@@ -82,6 +82,8 @@ IViewMainActivity, View.OnClickListener{
 
     private int mCurrentMusicIndex;
 
+    private static final int TO_MUSIC_PALYER_ACTIVITY = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -242,7 +244,7 @@ IViewMainActivity, View.OnClickListener{
                 intent.putExtra(MyConstant.MUSIC_INDEX_KEY, mCurrentMusicIndex);
                 intent.putExtra(MyConstant.MUSICS_KEY, (Serializable) mMusics);
                 intent.putExtra(MyConstant.MUSIC_STATE_KEY, mCurrentMusicState);
-                startActivity(intent);
+                startActivityForResult(intent, TO_MUSIC_PALYER_ACTIVITY);
                 break;
         }
     }
@@ -260,16 +262,39 @@ IViewMainActivity, View.OnClickListener{
     }
 
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode){
+            case TO_MUSIC_PALYER_ACTIVITY:
+                if(resultCode == RESULT_OK){
+                    mCurrentMusicState = data.getIntExtra(MyConstant.MUSIC_STATE_KEY, MusicState.PAUSE);
+                    if(mCurrentMusicState == MusicState.START){
+                        mPlayImageView.setImageResource(R.mipmap.play_blue);
+                    }else{
+                        mPlayImageView.setImageResource(R.mipmap.pause_blue);
+                    }
+                }
+                break;
+        }
+    }
+
     public class CurrentMusicReciver extends BroadcastReceiver {
         @Override
         public void onReceive(Context context, Intent intent) {
+            mCurrentMusicState = intent.getIntExtra(MyConstant.MUSIC_STATE_KEY, MusicState.PAUSE);
             int index = intent.getIntExtra(MyConstant.MUSIC_INDEX_KEY, -1);
             Music music = mMusics.get(index);
             mMusicNameTextView.setText(music.getName());
             mArtistNameTextView.setText(music.getArtist());
-            mPlayImageView.setImageResource(R.mipmap.play_blue);
-            mCurrentMusicState = MusicState.START;
+
+//            mCurrentMusicState = MusicState.START;
             mCurrentMusicIndex = index;
+            if(mCurrentMusicState == MusicState.START){
+                mPlayImageView.setImageResource(R.mipmap.play_blue);
+            }else{
+                mPlayImageView.setImageResource(R.mipmap.pause_blue);
+            }
         }
     }
 }
